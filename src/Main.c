@@ -1,46 +1,78 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> // For sscanf/atof
+
+// REMOVED: #include "cargs_api.h"
+// ADDED: Include the main cargs header
+#include "cargs.h" 
 #include "Util.h" // Include the header for our DLL
 
-/*
-* Note: We do *not* define MYMATH_EXPORTS here.
-* This ensures that the 'add' function is marked with
-* __declspec(dllimport), telling the compiler we expect
-* to find this function in an external DLL.
-*/
+// Define the options cargs will look for
+// This part is unchanged
+static struct cag_option options[] = {
+    {.identifier = 'f',
+        .access_letters = "f",
+        .access_name = "fahrenheit",
+        .value_name = "TEMP",
+        .description = "Convert Fahrenheit to Celsius"},
+
+    {.identifier = 'c',
+        .access_letters = "c",
+        .access_name = "celsius",
+        .value_name = "TEMP",
+        .description = "Convert Celsius to Fahrenheit"},
+
+    {.identifier = 'h',
+        .access_letters = "h",
+        .access_name = "help",
+        .value_name = NULL,
+        .description = "Show this help message"}
+};
 
 int main(int argc, char **argv) {
-    printf("--- Main Application Started ---\n");
+    printf("--- Temp Converter Started ---\n");
 
-    // int x = 5;
-    // int y = 7;
-    // int sum = 0;
+    cag_option_context context;
+    cag_option_init(&context, options, CAG_ARRAY_SIZE(options), argc, argv);
 
-    // // Call the 'add' function from our DLL
-    // printf("Calling 'add' function from Util.dll...\n");
-    // sum = add(x, y);
+    // Loop over all arguments
+    while (cag_option_fetch(&context)) {
+        char identifier = cag_option_get_identifier(&context);
+        const char *value_str = cag_option_get_value(&context);
 
-    // printf("The result is: %d\n", sum);
+        switch (identifier) {
+        case 'f': {
+            double temp_f;
+            sscanf(value_str, "%lf", &temp_f); // Parse the double from the string
+            double temp_c = ftc(temp_f);
+            printf("%.1f Fahrenheit is %.1f Celsius\n", temp_f, temp_c);
+            break;
+        }
 
-    printf("Calling 'ftc' function from Util.dll...\n");
-    if (argc < 2) {
-        printf("Usage: %s <Fahrenheit temperature>\n", argv[0]);
-        return 1;
+        case 'c': {
+            double temp_c;
+            sscanf(value_str, "%lf", &temp_c); // Parse the double from the string
+            double temp_f = ctf(temp_c);
+            printf("%.1f Celsius is %.1f Fahrenheit\n", temp_c, temp_f);
+            break;
+        }
+
+        case 'h':
+            printf("Usage: Main.exe [options]\n");
+            cag_option_print_help(&context, stdout);
+            break;
+
+        case '?':
+            printf("Error: Unknown option '-%c'\n",
+                   cag_option_get_identifier(&context));
+            cag_option_print_help(&context, stdout);
+            break;
+        case ':':
+            printf("Error: Option '-%c' requires a value.\n",
+                   cag_option_get_identifier(&context));
+            break;
+        }
     }
-    // FIXED: Use double for variables
-    double f; 
-    // sscanf(str, "%lf", &d);
-    sscanf(argv[1], "%lf", &f);
 
-    double c = ftc(f);
-    // FIXED: Use %.1f format specifier for doubles
-    printf("Fahrenheit %.1f is Celsius %.1f\n", f, c);
-
-    printf("--- Main Application Exiting ---\n");
-
-    // Wait for user input to see the messages before console closes
-    printf("Press Enter to exit...\n");
-    getchar(); // Waits for the Enter key
-    
+    printf("--- Temp Converter Exiting ---\n");
     return 0;
 }

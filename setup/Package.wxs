@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  This is your "Temp Converter" installer, based on your "H20" example.
+  It is correctly configured for a PER-USER install:
+  1. <Package Scope="perUser">
+  2. Installs to <StandardDirectory Id="LocalAppDataFolder">
+  3. Creates shortcuts in <StandardDirectory Id="ProgramMenuFolder">
+  4. Writes all registry keys to Root="HKCU" (HKEY_CURRENT_USER)
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+    <!-- 
+      - Name, Manufacturer, and Version are updated for your project.
+      - UpgradeCode is a NEW GUID. This ID must stay the same for all future versions of your app.
+      - Scope="perUser" is the key to making this a per-user install.
+    -->
+    <Package Name="Temp Converter"
+             Manufacturer="Grishka"
+             Version="1.0.0.0"
+             UpgradeCode="{E121873B-5828-4E4D-A81E-A3D49F7C2B4B}"
+             Compressed="true"
+             Scope="perUser">
+
+        <!-- 
+          To customize the installer's look, uncomment these lines
+          and add the files to your Installer/ folder.
+          <WixVariable Id="WixUIBannerBmp" Value="banner.bmp" />
+          <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
+        -->
+        <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+        
+        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+        <MediaTemplate EmbedCab="true" />
+
+        <!-- 
+          To add an icon, uncomment this and add your .ico file.
+          <Icon Id="app_icon.ico" SourceFile="../path/to/icon.ico"/>
+          <Property Id="ARPPRODUCTICON" Value="app_icon.ico" />
+        -->
+
+        <!-- This line includes the standard "Install Directory" UI -->
+        <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+
+        <!-- 
+          Define the per-user install location.
+          This will resolve to C:\Users\<username>\AppData\Local\Temp Converter
+        -->
+        <StandardDirectory Id="LocalAppDataFolder">
+            <Directory Id="INSTALLFOLDER" Name="Temp Converter" />
+        </StandardDirectory>
+        
+        <!-- Define the per-user Start Menu location -->
+        <StandardDirectory Id="ProgramMenuFolder">
+            <Directory Id="ApplicationProgramsFolder" Name="Temp Converter"/>
+        </StandardDirectory>
+
+        <!-- 
+          The Feature tree defines what gets installed.
+          We are installing all our components.
+        -->
+        <Feature Id="Main">
+            <ComponentRef Id="Main_Executable" />
+            <ComponentRef Id="Util_DLL" />
+            <ComponentRef Id="cargs_DLL" />
+            <ComponentRef Id="ApplicationShortcut" />
+            <ComponentRef Id="Cleanup_InstallFolder" />
+        </Feature>
+
+        <!-- 
+          Component for the main .exe file.
+          Note the Source path points to your build output folder.
+          Each component needs a unique GUID.
+        -->
+        <Component Id="Main_Executable" Directory="INSTALLFOLDER" Guid="{5A1B898C-0329-4A73-9D6C-6288B8A6133F}">
+            <!-- KeyPath="yes" means this file is the "key" for this component. If it's missing, the installer knows the component is broken. -->
+            <File Id="Main.exe" Source="../Build/Main.exe" KeyPath="yes" />
+            
+            <!-- Adds the install folder to the USER'S Path environment variable -->
+            <Environment Id="PATH" Name="Path" Value="[INSTALLFOLDER]" Permanent="no" Part="last" Action="set" System="no" />
+        </Component>
+
+        <!-- Component for Util.dll -->
+        <Component Id="Util_DLL" Directory="INSTALLFOLDER" Guid="{F3B1A241-9F36-4E87-9430-D07E6F54D04C}">
+            <File Id="Util.dll" Source="../Build/Util.dll" KeyPath="yes" />
+        </Component>
+
+        <!-- Component for cargs.dll -->
+        <Component Id="cargs_DLL" Directory="INSTALLFOLDER" Guid="{87E39B52-325A-4B6A-8187-567F4B6B4084}">
+            <File Id="cargs.dll" Source="../Build/cargs.dll" KeyPath="yes" />
+        </Component>
+
+        <!-- 
+          Component for the Start Menu shortcut.
+          It's best practice to put shortcuts in their own component.
+        -->
+        <Component Id="ApplicationShortcut" Directory="ApplicationProgramsFolder" Guid="{4D65D822-6F5D-40CF-8E2E-5511A1B43329}">
+            <Shortcut Id="ApplicationStartMenuShortcut"
+                      Name="Temp Converter"
+                      Description="Launch Temp Converter"
+                      Target="[INSTALLFOLDER]Main.exe"
+                      WorkingDirectory="INSTALLFOLDER"/>
+                      <!-- Icon="app_icon.ico" -->
+            
+            <!-- Removes the Start Menu folder on uninstall -->
+            <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+            
+            <!-- Writes a registry key. This is the KeyPath for this component. -->
+            <RegistryValue Root="HKCU" Key="Software\Grishka\TempConverter" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        </Component>
+        
+        <!-- 
+          This component's only job is to clean up the install folder.
+          This ensures the folder itself is removed on uninstall.
+        -->
+        <Component Id="Cleanup_InstallFolder" Directory="INSTALLFOLDER" Guid="{3C42586B-A261-4F24-B1F3-B3E034873130}">
+            <RemoveFolder Id="INSTALLFOLDER" On="uninstall"/>
+            <RegistryValue Root="HKCU" Key="Software\Grishka\TempConverter" Name="Path" Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
+        </Component>
+
+    </Package>
+</Wix>

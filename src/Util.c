@@ -64,3 +64,9 @@ UTIL_API double ftc(double f) {
 
     return c;
 }
+
+UTIL_API double ctf(double c) {
+    double f = (c * 9.0/5.0) + 32;
+
+    return f;
+}

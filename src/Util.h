@@ -24,12 +24,17 @@ UTIL_API int add(int a, int b);
 
 /**  
  * @brief Converts Fahrenheit to Celsius
- * @param f 
+ * @param f Fahrenheit value to convert
  * @return Celsius temperature
  */
 UTIL_API double ftc(double f);
 // When you add more functions, just add their prototypes here:
 // UTIL_API int subtract(int a, int b);
+
+/// @brief Converts Celsius to Fahrenheit
+/// @param c Celsius value to convert
+/// @return Fahrenheit temperature
+UTIL_API double ctf(double c);
 
 
 #endif // UTIL_H

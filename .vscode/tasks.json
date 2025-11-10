@@ -19,16 +19,34 @@
                 "Build/Util.dll",
                 "src/Util.c",
                 "-Isrc",
-                //
-                // THE FINAL FIX:
-                // We are back to the original, correct syntax
-                // that gcc understands (with a comma).
-                // The "options" block above tells VS Code to
-                // run this command using "cmd.exe", which
-                // will not break on the comma like PowerShell does.
-                //
-                "-Wl,--out-implib,libmymath.a",
-                //
+                "-Wl,--out-implib,libutil.a", // Renamed to libutil.a
+                "-g"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            // NEW TASK: Build cargs.dll
+            "label": "Build DLL (cargs.dll)",
+            "type": "shell",
+            "command": "gcc",
+            "options": {
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            },
+            "args": [
+                "-shared",
+                "-o",
+                "Build/cargs.dll",
+                "src/cargs_dll.c", // Compile our new C file
+                "-Isrc",
+                "-Wl,--out-implib,libcargs.a", // Output libcargs.a
                 "-g"
             ],
             "group": "build",
@@ -53,8 +71,9 @@
                 "Build/Main.exe",
                 "src/Main.c",
                 "-Isrc",
-                "-L.",
-                "-lmymath",
+                "-L.", // Look for libraries in the current folder
+                "-lutil",  // Link libutil.a
+                "-lcargs", // Link libcargs.a
                 "-g"
             ],
             "group": {
@@ -64,7 +83,11 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "dependsOn": "Build DLL (Util.dll)"
+            // Main.exe now depends on BOTH DLLs
+            "dependsOn": [
+                "Build DLL (Util.dll)",
+                "Build DLL (cargs.dll)"
+            ]
         }
     ]
 }

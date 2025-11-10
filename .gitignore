@@ -57,3 +57,7 @@ dkms.conf
 # Custom build files
 build/
 Build/
+
+# Setup files
+setup/bin
+setup/obj
