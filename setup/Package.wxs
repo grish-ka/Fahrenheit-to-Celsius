@@ -74,7 +74,7 @@
         -->
         <Component Id="Main_Executable" Directory="INSTALLFOLDER" Guid="{5A1B898C-0329-4A73-9D6C-6288B8A6133F}">
             <!-- KeyPath="yes" means this file is the "key" for this component. If it's missing, the installer knows the component is broken. -->
-            <File Id="Main.exe" Source="../Build/Main.exe" KeyPath="yes" />
+            <File Id="ctf.exe" Source="../Build/ctf.exe" KeyPath="yes" />
             
             <!-- Adds the install folder to the USER'S Path environment variable -->
             <Environment Id="PATH" Name="Path" Value="[INSTALLFOLDER]" Permanent="no" Part="last" Action="set" System="no" />

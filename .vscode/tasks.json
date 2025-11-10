@@ -68,7 +68,7 @@
             },
             "args": [
                 "-o",
-                "Build/Main.exe",
+                "Build/ctf.exe",
                 "src/Main.c",
                 "-Isrc",
                 "-L.", // Look for libraries in the current folder
