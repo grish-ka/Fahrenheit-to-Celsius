@@ -1,6 +1,6 @@
 // We must define MYMATH_EXPORTS before including the header
 // so that the functions are marked for *export*.
-#define MYMATH_EXPORTS
+#define UTIL_EXPORTS
 
 #include "Util.h"
 #include <stdio.h>
@@ -33,7 +33,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     case DLL_PROCESS_DETACH:
         // Called when the DLL is unloaded.
         // We can do cleanup here.
-        printf("MyMath.dll unloaded.\n");
+        printf("Util.dll unloaded.\n");
         break;
     }
     return TRUE; // Successful
@@ -47,7 +47,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
  * @brief Implementation of the add function.
  * This is the actual code that will live inside the DLL.
  */
-int add(int a, int b) {
+UTIL_API int add(int a, int b) {
     return a + b;
 }
 
@@ -56,8 +56,11 @@ int add(int a, int b) {
 //     return a - b;
 // }
 
-int ftc(int f) {
-    int c = (f - 32) * 5/9;
+// FIXED: Signature changed to double
+UTIL_API double ftc(double f) {
+    // FIXED: Use floating-point numbers (5.0 / 9.0)
+    // C integer math makes 5 / 9 = 0, which is the bug.
+    double c = (f - 32.0) * (5.0 / 9.0);
 
     return c;
 }

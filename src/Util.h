@@ -1,5 +1,5 @@
-#ifndef MYMATH_H
-#define MYMATH_H
+#ifndef UTIL_H
+#define UTIL_H
 
 /*
 * This is a common pattern for creating DLLs in Windows
@@ -8,10 +8,10 @@
 * whether we are *building* the DLL or *using* the DLL.
 */
 
-#ifdef MYMATH_EXPORTS
-    #define MYMATH_API __declspec(dllexport)
+#ifdef UTIL_EXPORTS
+    #define UTIL_API __declspec(dllexport)
 #else
-    #define MYMATH_API __declspec(dllimport)
+    #define UTIL_API __declspec(dllimport)
 #endif
 
 /**
@@ -20,16 +20,16 @@
  * @param b The second integer.
  * @return The sum of a and b.
  */
-MYMATH_API int add(int a, int b);
+UTIL_API int add(int a, int b);
 
 /**  
  * @brief Converts Fahrenheit to Celsius
  * @param f 
  * @return Celsius temperature
  */
-MYMATH_API int ftc(int f);
+UTIL_API double ftc(double f);
 // When you add more functions, just add their prototypes here:
-// MYMATH_API int subtract(int a, int b);
+// UTIL_API int subtract(int a, int b);
 
 
-#endif // MYMATH_H
+#endif // UTIL_H
