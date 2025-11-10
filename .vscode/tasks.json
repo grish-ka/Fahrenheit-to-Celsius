@@ -1,0 +1,70 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build DLL (Util.dll)",
+            "type": "shell",
+            "command": "gcc",
+            "options": {
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            },
+            "args": [
+                "-shared",
+                "-o",
+                "Build/Util.dll",
+                "src/Util.c",
+                "-Isrc",
+                //
+                // THE FINAL FIX:
+                // We are back to the original, correct syntax
+                // that gcc understands (with a comma).
+                // The "options" block above tells VS Code to
+                // run this command using "cmd.exe", which
+                // will not break on the comma like PowerShell does.
+                //
+                "-Wl,--out-implib,libmymath.a",
+                //
+                "-g"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build Main (Main.exe)",
+            "type": "shell",
+            "command": "gcc",
+            "options": {
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            },
+            "args": [
+                "-o",
+                "Build/Main.exe",
+                "src/Main.c",
+                "-Isrc",
+                "-L.",
+                "-lmymath",
+                "-g"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "dependsOn": "Build DLL (Util.dll)"
+        }
+    ]
+}
